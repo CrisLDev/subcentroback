@@ -7,11 +7,11 @@ const Book = require('../models/Book');
 //@access   Public
 router.get('/', async (req, res) => {
     try {
-        const dates = await Book.find();
-        if(dates){
+        const books = await Book.find();
+        if(books){
             return res.json({msg: 'No data to show.'})
         }
-        return res.json(dates);
+        return res.json(books);
     } catch (err) {
         console.error(err.message);
         return res.status(500).send('Server error');
