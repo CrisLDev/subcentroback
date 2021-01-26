@@ -20,5 +20,6 @@ app.get('/', (req, res) => res.send('Api is running'))
 
 // Routes
 app.use('/api/dates', require('./routes/datesRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
 
 app.listen(PORT, () => { console.log('Server is running on port', PORT) });
