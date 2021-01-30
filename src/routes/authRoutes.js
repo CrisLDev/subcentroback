@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const tokenValidation = require('../libs/verifyToken');
 
 // Hash Password for security my bro
 const hashPasswords = async (password) => {
@@ -43,7 +45,7 @@ router.post('/login', async(req, res) => {
     try {
         const {userName, password} = req.body;
         // Searching for user
-        const userExist = await User.findOne({userName});
+        let userExist = await User.findOne({userName});
         //Check is username is correct
         if(!userExist){
             return res.status(400).json({msg: 'Username doesnt exist.'})
@@ -54,7 +56,26 @@ router.post('/login', async(req, res) => {
         if(!isMatch){
             return res.status(400).json({msg: 'Password is incorrect.'})
         }
-        console.log(userExist);
+        
+        const token = jwt.sign({id: userExist.id}, 'rashumulukaska', {expiresIn: 86400});
+        let userWithToken = {...userExist._doc};
+        const tokenValue = {token: token};
+        Object.assign(userWithToken, tokenValue);
+        return res.json(userWithToken)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
+router.get('/me', tokenValidation, async(req, res) => {
+    try {
+        const userExist = await User.findById(req.userId);
+        //Check is username is correct
+        if(!userExist){
+            return res.status(400).json({msg: 'Username doesnt exist.'})
+        }
+        console.log(userExist)
         return res.json(userExist)
     } catch (err) {
         console.error(err.menssage);
