@@ -35,13 +35,44 @@ router.get('/:id', async(req, res) => {
 });
 
 router.post('/', async(req, res) => {
+    if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
+        try {
+            const {dateForSearch, hour, patient_id} = req.body;
+            function makeCode(length) {
+                var result           = '';
+                var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var charactersLength = characters.length;
+                for ( var i = 0; i < length; i++ ) {
+                   result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+             }
+            const newBook = new Book({
+                date: dateForSearch,
+                code: makeCode(10),
+                patient_id,
+                hour
+            });
+            const bookSaved = await newBook.save();
+            res.json(bookSaved);
+        } catch (err) {
+            console.error(err.menssage);
+            return res.status(500).send('Server error');
+        }
+    }else{
+        console.log(req.body.hour)
+        return res.status(400).json({msg: 'No me cambie los datos no sea animal.'})
+    }
+    
+});
+
+router.post('/consulting', async(req, res) => {
     try {
-        const {date, code, consulting_room} = req.body;
-        const newBook = new Book({
-            date, code, consulting_room
-        });
-        const bookSaved = await newBook.save();
-        res.json(bookSaved);
+        const book = await Book.find({date: req.body.dateForSearch});
+        if(book.length <= 0){
+            return res.json({msg: 'No data to show.'})
+        }
+        return res.json(book);
     } catch (err) {
         console.error(err.menssage);
         return res.status(500).send('Server error');

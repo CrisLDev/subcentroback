@@ -1,27 +1,31 @@
 const mongoose = require('mongoose');
 
 const BookSchema = new mongoose.Schema({
-    /*patient:{
+    patient_id:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'patient',
+        ref: 'user',
         required: true
-    },*/
+    },
     /*doctor:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'doctor',
         required: true
     },*/
     date:{
-        type: Date,
+        type: String,
         required: true
     },
     code:{
         type: String,
         required: true
     },
-    consulting_room:{
+    hour:{
         type: String,
         required: true
+    },
+    consulting_room:{
+        type: String,
+        //required: true
     }
 }, {timestamps: true, versionKey: false});
 
