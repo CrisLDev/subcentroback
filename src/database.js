@@ -14,6 +14,6 @@ const connectDB = async () => {
         console.log(error);
         process.exit(1);
     }
-}
+}//solo hice esto para hacer un nuevo commit
 
 module.exports = connectDB;
