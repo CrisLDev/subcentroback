@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
+const User = require('../models/User');
 
 //@Route    GET api/dates
 //@desc     Test route
@@ -37,7 +38,7 @@ router.get('/:id', async(req, res) => {
 router.post('/', async(req, res) => {
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
-            const {dateForSearch, hour, patient_id} = req.body;
+            const {dateForSearch, hour, patient_id, consulting_room} = req.body;
             function makeCode(length) {
                 var result           = '';
                 var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -46,12 +47,21 @@ router.post('/', async(req, res) => {
                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
                 }
                 return result;
-             }
+            }
+            const doctors = await User.find({role: "doctor"});
+            const doctorsId = doctors.map(async function(doctor) {
+                const numeroDeCitasPorDoctor = await Book.find({doctor_id: doctor._id});
+                //if(numeroDeCitasPorDoctor.length < 5){
+                //    return console.log(numeroDeCitasPorDoctor.length)
+                //}
+                return algo = numeroDeCitasPorDoctor.length;
+            });
             const newBook = new Book({
                 date: dateForSearch,
                 code: makeCode(10),
                 patient_id,
-                hour
+                hour,
+                consulting_room
             });
             const bookSaved = await newBook.save();
             res.json(bookSaved);

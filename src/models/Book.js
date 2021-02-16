@@ -6,11 +6,6 @@ const BookSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
-    /*doctor:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'doctor',
-        required: true
-    },*/
     date:{
         type: String,
         required: true
@@ -25,7 +20,7 @@ const BookSchema = new mongoose.Schema({
     },
     consulting_room:{
         type: String,
-        //required: true
+        required: true
     }
 }, {timestamps: true, versionKey: false});
 
