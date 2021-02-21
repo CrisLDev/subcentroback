@@ -8,7 +8,7 @@ const User = require('../models/User');
 //@access   Public
 router.get('/', async(req, res) => {
     try {
-        const books = await Book.find();
+        const books = await Book.find().sort({createdAt: -1}).populate('patient_id');
         if(books.length <= 0){
             return res.json({msg: 'No data to show.'})
         }
