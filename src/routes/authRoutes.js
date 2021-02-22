@@ -53,6 +53,7 @@ router.put('/user', async(req, res) => {
         if(userByEmailExist && userByEmailExist._id != user_id){
             return res.status(400).json({msg: 'Email already exist.'})
         }
+        console.log(req.body)
         if(!userExist){
             return res.status(400).json({msg: 'User doenst exist.'})
         }
@@ -68,7 +69,6 @@ router.put('/user', async(req, res) => {
             Object.assign(userToEdit, {password: passwordHashed});
         }
         if(role !== ''){
-
             Object.assign(userToEdit, {role: role});
         }
         if(imgUrl !== ''){
