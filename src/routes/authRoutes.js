@@ -57,7 +57,7 @@ router.put('/user', async(req, res) => {
             return res.status(400).json({msg: 'User doenst exist.'})
         }
         const userToEdit = ({
-            userName, email, adress, fullName, age, telephoneNumber, role
+            userName, email, adress, fullName, age, telephoneNumber
         });
         if(password !== ''){
             if(req.body.password != req.body.password2){
@@ -66,6 +66,10 @@ router.put('/user', async(req, res) => {
             const passwordHashed = await hashPasswords(password);
 
             Object.assign(userToEdit, {password: passwordHashed});
+        }
+        if(role !== ''){
+
+            Object.assign(userToEdit, {role: role});
         }
         if(imgUrl !== ''){
             Object.assign(userToEdit, {imgUrl: imgUrl});
