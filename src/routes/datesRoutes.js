@@ -35,6 +35,19 @@ router.get('/:id', async(req, res) => {
     }
 });
 
+router.get('/:code', async(req, res) => {
+    try {
+        const date = await Book.findOne({code: req.params.code});
+        if(!date){
+            return res.json({msg: 'No data to show.'})
+        }
+        return res.json(date);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
 router.post('/', async(req, res) => {
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
