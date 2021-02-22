@@ -34,7 +34,44 @@ router.post('/register', async(req, res) => {
         });
         newUser.password = await hashPasswords(password);
         const userSaved = await newUser.save();
-        res.json(userSaved);
+        return res.json(userSaved);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
+router.put('/user', async(req, res) => {
+    try {
+        const {userName, email, password, password2, adress, fullName, age, user_id, imgUrl, telephoneNumber, role} = req.body;
+        const userExist = await User.findById(user_id);
+        const userByNameExist = await User.findOne({userName});
+        if(userByNameExist && userByNameExist._id != user_id){
+            return res.status(400).json({msg: 'Username already exist.'})
+        }
+        const userByEmailExist = await User.findOne({email});
+        if(userByEmailExist && userByEmailExist._id != user_id){
+            return res.status(400).json({msg: 'Email already exist.'})
+        }
+        if(!userExist){
+            return res.status(400).json({msg: 'User doenst exist.'})
+        }
+        const userToEdit = ({
+            userName, email, adress, fullName, age, telephoneNumber, role
+        });
+        if(password !== ''){
+            if(req.body.password != req.body.password2){
+                return res.status(400).json({msg: "Las contraseñas no coinciden."})
+            }
+            const passwordHashed = await hashPasswords(password);
+
+            Object.assign(userToEdit, {password: passwordHashed});
+        }
+        if(imgUrl !== ''){
+            Object.assign(userToEdit, {imgUrl: imgUrl});
+        }
+        const userEdited = await User.findByIdAndUpdate(user_id, userToEdit, {new: true});
+        return res.status(200).json(userEdited);
     } catch (err) {
         console.error(err.menssage);
         return res.status(400).json({err});
@@ -77,6 +114,36 @@ router.get('/me', tokenValidation, async(req, res) => {
         }
         console.log(userExist)
         return res.json(userExist)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
+router.get('/users', tokenValidation, async(req, res) => {
+    try {
+        const users = await User.find();
+        //Check is username is correct
+        if(!users){
+            return res.status(400).json({msg: 'Dont have users in bd.'})
+        }
+        console.log(users)
+        return res.json(users)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
+router.delete('/users/:id', tokenValidation, async(req, res) => {
+    try {
+        const user = await User.findByIdAndRemove(req.params.id);
+        //Check is username is correct
+        if(!user){
+            return res.status(400).json({msg: 'User dont exist in bd.'})
+        }
+        console.log(user)
+        return res.json(user)
     } catch (err) {
         console.error(err.menssage);
         return res.status(400).json({err});
