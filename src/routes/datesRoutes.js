@@ -35,7 +35,7 @@ router.get('/:id', async(req, res) => {
     }
 });
 
-router.get('/:code', async(req, res) => {
+router.get('/consult/:code', async(req, res) => {
     try {
         const date = await Book.findOne({code: req.params.code});
         if(!date){
