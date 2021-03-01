@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 const User = require('../models/User');
+const moment = require('moment');
 
 //@Route    GET api/dates
 //@desc     Test route
@@ -69,12 +70,36 @@ router.post('/', async(req, res) => {
                 //}
                 return algo = numeroDeCitasPorDoctor.length;
             });
+            // Buscando la ultima hora guardada para aumentarla
+            const book = await Book.findOne({date: req.body.dateForSearch, hour: req.body.hour}).sort({createdAt: -1});
+            if(book){/*
+                function addMinutes(time, minsToAdd) {
+                    function D(J){ return (J<10? '0':'') + J;};
+                    var piece = time.split(':');
+                    var mins = piece[0]*60 + +piece[1] + +minsToAdd;
+    
+                    console.log(mins)
+                  
+                    return D(mins%(24*60)/60 | 0) + ':' + D(mins%60);  
+                }
+                var possible = addMinutes(book.hour, '30');*/
+                const fecha = book.date + ' ' + book.possible_hour;
+                const date = moment(fecha);
+                date.add(30, 'm');
+                const fechaR = date.toString();
+                const hora = fechaR.split(' ')[4];
+                var possible = hora;
+            }else{
+                var possible = hour;
+            }
+            // aqui termina esta weada
             const newBook = new Book({
                 date: dateForSearch,
                 code: makeCode(10),
                 patient_id,
                 hour,
-                consulting_room
+                consulting_room,
+                possible_hour: possible
             });
             const bookSaved = await newBook.save();
             res.json(bookSaved);

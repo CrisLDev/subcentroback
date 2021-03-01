@@ -18,6 +18,10 @@ const BookSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    possible_hour:{
+        type: String,
+        required: true
+    },
     consulting_room:{
         type: String,
         required: true
