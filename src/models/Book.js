@@ -25,6 +25,10 @@ const BookSchema = new mongoose.Schema({
     consulting_room:{
         type: String,
         required: true
+    },
+    especiality:{
+        type: String,
+        required: true
     }
 }, {timestamps: true, versionKey: false});
 
