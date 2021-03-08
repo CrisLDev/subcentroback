@@ -18,7 +18,7 @@ const validatePassword = async (password, passwordFromRequest) => {
 
 router.post('/register', async(req, res) => {
     try {
-        const {userName, email, password} = req.body;
+        const {userName, email, password, role} = req.body;
         // Check if user already exist
         const userByNameExist = await User.findOne({userName});
         
@@ -32,6 +32,9 @@ router.post('/register', async(req, res) => {
         const newUser = new User({
             userName, email, password
         });
+        if(role !== ''){
+            Object.assign(newUser, {role: role});
+        }
         newUser.password = await hashPasswords(password);
         const userSaved = await newUser.save();
         return res.json(userSaved);
