@@ -28,10 +28,6 @@ router.post('/', async(req, res) => {
 router.get('/', async(req, res) => {
     try {
         const consultingExists = await Consulting.find().sort({createdAt: -1});
-        
-        if(consultingExists.length <= 0){
-            return res.status(400).json({msg: 'Not consultings in BD.'})
-        }
         return res.json(consultingExists);
     } catch (err) {
         console.error(err.menssage);

@@ -25,10 +25,6 @@ router.post('/', async(req, res) => {
 router.get('/', async(req, res) => {
     try {
         const especialityExists = await Especiality.find().sort({createdAt: -1});
-        
-        if(especialityExists.length <= 0){
-            return res.status(400).json({msg: 'Not especialities in BD.'})
-        }
         return res.json(especialityExists);
     } catch (err) {
         console.error(err.menssage);
