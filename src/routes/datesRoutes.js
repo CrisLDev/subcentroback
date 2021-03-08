@@ -158,7 +158,6 @@ router.post('/consulting', async(req, res) => {
     try {
         const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality});
         if(book.length <= 0){
-            console.log(book)
             return res.json({msg: 'No data to show.'})
         }
         return res.json(book);
