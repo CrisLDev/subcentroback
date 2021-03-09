@@ -35,40 +35,27 @@ router.get('/', async(req, res) => {
     }
 });
 
-router.put('/user', async(req, res) => {
+router.get('/:id', async(req, res) => {
     try {
-        const {userName, email, password, password2, adress, fullName, age, user_id, imgUrl, telephoneNumber, role} = req.body;
-        const userExist = await User.findById(user_id);
-        const userByNameExist = await User.findOne({userName});
-        if(userByNameExist && userByNameExist._id != user_id){
-            return res.status(400).json({msg: 'Username already exist.'})
-        }
-        const userByEmailExist = await User.findOne({email});
-        if(userByEmailExist && userByEmailExist._id != user_id){
-            return res.status(400).json({msg: 'Email already exist.'})
-        }
-        console.log(req.body)
-        if(!userExist){
-            return res.status(400).json({msg: 'User doenst exist.'})
-        }
-        const userToEdit = ({
-            userName, email, adress, fullName, age, telephoneNumber
-        });
-        if(password !== ''){
-            if(req.body.password != req.body.password2){
-                return res.status(400).json({msg: "Las contraseñas no coinciden."})
-            }
-            const passwordHashed = await hashPasswords(password);
+        const consultingExists = await Consulting.findById(req.params.id);
+        return res.json(consultingExists);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json(err);
+    }
+});
 
-            Object.assign(userToEdit, {password: passwordHashed});
+router.put('/:id', async(req, res) => {
+    try {
+        const {name, code, especiality} = req.body;
+        const roomExist = await Consulting.findOne({name: req.body.name});
+        if(roomExist){
+            return res.status(400).json({msg: 'Consultorio ya existe.'})
         }
-        if(role !== ''){
-            Object.assign(userToEdit, {role: role});
-        }
-        if(imgUrl !== ''){
-            Object.assign(userToEdit, {imgUrl: imgUrl});
-        }
-        const userEdited = await User.findByIdAndUpdate(user_id, userToEdit, {new: true});
+        const roomToEdit = ({
+            name, code, especiality
+        });
+        const userEdited = await Consulting.findByIdAndUpdate(req.params.id, roomToEdit, {new: true});
         return res.status(200).json(userEdited);
     } catch (err) {
         console.error(err.menssage);

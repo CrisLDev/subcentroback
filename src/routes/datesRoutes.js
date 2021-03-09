@@ -157,10 +157,9 @@ router.post('/', async(req, res) => {
 router.post('/consulting', async(req, res) => {
     try {
         const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality});
-        if(book.length <= 0){
-            return res.json({msg: 'No data to show.'})
-        }
-        return res.json(book);
+        const consultorios = await Consulting.find({especiality: req.body.especiality});
+        const total = consultorios.length;
+        return res.json([book, total]);
     } catch (err) {
         console.error(err.menssage);
         return res.status(500).send('Server error');
