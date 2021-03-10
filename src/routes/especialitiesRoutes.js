@@ -1,46 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const tokenValidation = require('../libs/verifyToken');
+const Especiality = require('../models/Especiality');
 
-// Hash Password for security my bro
-const hashPasswords = async (password) => {
-    const salt = await bcrypt.genSalt(10);
-    return bcrypt.hash(password, salt)
-}
-
-// Validating password bro
-const validatePassword = async (password, passwordFromRequest) => {
-    return await bcrypt.compare(password, passwordFromRequest)
-}
-
-router.post('/register', async(req, res) => {
+router.post('/', async(req, res) => {
     try {
-        const {userName, email, password, role} = req.body;
+        const {name} = req.body;
         // Check if user already exist
-        const userByNameExist = await User.findOne({userName});
+        const especialityNameExist = await Especiality.findOne({name});
         
-        if(userByNameExist){
-            return res.status(400).json({msg: 'Username already exist.'})
+        if(especialityNameExist){
+            return res.status(400).json({msg: 'Especiality already exist.'})
         }
-        const userByEmailExist = await User.findOne({email});
-        if(userByEmailExist){
-            return res.status(400).json({msg: 'Email already was taken.'})
-        }
-        const newUser = new User({
-            userName, email, password
+        const newEspeciality = new Especiality({
+            name
         });
-        if(role !== ''){
-            Object.assign(newUser, {role: role});
-        }
-        newUser.password = await hashPasswords(password);
-        const userSaved = await newUser.save();
-        return res.json(userSaved);
+        const especialitySave = await newEspeciality.save();
+        return res.json(especialitySave);
     } catch (err) {
         console.error(err.menssage);
         return res.status(400).json({err});
+    }
+});
+
+router.get('/', async(req, res) => {
+    try {
+        const especialityExists = await Especiality.find().sort({createdAt: -1});
+        return res.json(especialityExists);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json(err);
     }
 });
 
@@ -111,7 +99,7 @@ router.post('/login', async(req, res) => {
     }
 });
 
-router.get('/me', tokenValidation, async(req, res) => {
+router.get('/me', async(req, res) => {
     try {
         const userExist = await User.findById(req.userId);
         //Check is username is correct
@@ -125,7 +113,7 @@ router.get('/me', tokenValidation, async(req, res) => {
     }
 });
 
-router.get('/users', tokenValidation, async(req, res) => {
+router.get('/users', async(req, res) => {
     try {
         const users = await User.find();
         //Check is username is correct
@@ -139,7 +127,7 @@ router.get('/users', tokenValidation, async(req, res) => {
     }
 });
 
-router.delete('/users/:id', tokenValidation, async(req, res) => {
+router.delete('/users/:id', async(req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id);
         //Check is username is correct

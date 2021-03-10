@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 const User = require('../models/User');
+const moment = require('moment');
+const Consulting = require('../models/Consulting');
 
 //@Route    GET api/dates
 //@desc     Test route
@@ -49,9 +51,11 @@ router.get('/consult/:code', async(req, res) => {
 });
 
 router.post('/', async(req, res) => {
+    // Verificamos si la hora a registrar es valida
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
-            const {dateForSearch, hour, patient_id, consulting_room} = req.body;
+            const {dateForSearch, hour, patient_id, consulting_room, especiality} = req.body;
+            // Creamos el codigo para la cita
             function makeCode(length) {
                 var result           = '';
                 var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -61,6 +65,7 @@ router.post('/', async(req, res) => {
                 }
                 return result;
             }
+            // Buscamos los doctores disponibles
             const doctors = await User.find({role: "doctor"});
             const doctorsId = doctors.map(async function(doctor) {
                 const numeroDeCitasPorDoctor = await Book.find({doctor_id: doctor._id});
@@ -69,12 +74,37 @@ router.post('/', async(req, res) => {
                 //}
                 return algo = numeroDeCitasPorDoctor.length;
             });
+            // Buscando la ultima hora guardada para aumentarla
+            const book = await Book.findOne({date: req.body.dateForSearch, hour: req.body.hour}).sort({createdAt: -1});
+            if(book){/*
+                function addMinutes(time, minsToAdd) {
+                    function D(J){ return (J<10? '0':'') + J;};
+                    var piece = time.split(':');
+                    var mins = piece[0]*60 + +piece[1] + +minsToAdd;
+    
+                    console.log(mins)
+                  
+                    return D(mins%(24*60)/60 | 0) + ':' + D(mins%60);  
+                }
+                var possible = addMinutes(book.hour, '30');*/
+                const fecha = book.date + ' ' + book.possible_hour;
+                const date = moment(fecha);
+                date.add(30, 'm');
+                const fechaR = date.toString();
+                const hora = fechaR.split(' ')[4];
+                var possible = hora;
+            }else{
+                var possible = hour;
+            }
+            // aqui termina esta weada
             const newBook = new Book({
                 date: dateForSearch,
                 code: makeCode(10),
                 patient_id,
                 hour,
-                consulting_room
+                consulting_room,
+                possible_hour: possible,
+                especiality
             });
             const bookSaved = await newBook.save();
             res.json(bookSaved);
@@ -91,10 +121,7 @@ router.post('/', async(req, res) => {
 
 router.post('/consulting', async(req, res) => {
     try {
-        const book = await Book.find({date: req.body.dateForSearch});
-        if(book.length <= 0){
-            return res.json({msg: 'No data to show.'})
-        }
+        const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality, consulting_room: req.body.code});
         return res.json(book);
     } catch (err) {
         console.error(err.menssage);
