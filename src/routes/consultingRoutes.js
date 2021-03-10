@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Consulting = require('../models/Consulting');
+const Book = require('../models/Book');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const tokenValidation = require('../libs/verifyToken');
@@ -35,6 +36,16 @@ router.get('/', async(req, res) => {
     }
 });
 
+router.post('/rooms', async(req, res) => {
+    try {
+        const consultings = await Consulting.find({especiality: req.body.especiality});
+        return res.json(consultings);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json(err);
+    }
+});
+
 router.get('/:id', async(req, res) => {
     try {
         const consultingExists = await Consulting.findById(req.params.id);
@@ -63,72 +74,15 @@ router.put('/:id', async(req, res) => {
     }
 });
 
-router.post('/login', async(req, res) => {
+router.delete('/:id', tokenValidation, async(req, res) => {
     try {
-        const {userName, password} = req.body;
-        // Searching for user
-        let userExist = await User.findOne({userName});
+        const consulting = await Consulting.findByIdAndRemove(req.params.id);
+        await Book.deleteMany({consulting_room: consulting.code});
         //Check is username is correct
-        if(!userExist){
-            return res.status(400).json({msg: 'Username doesnt exist.'})
+        if(!consulting){
+            return res.status(400).json({msg: 'Consulting dont exist in bd.'})
         }
-        //Validating password
-        const isMatch = await bcrypt.compare(password, userExist.password);
-
-        if(!isMatch){
-            return res.status(400).json({msg: 'Password is incorrect.'})
-        }
-        
-        const token = jwt.sign({id: userExist.id}, 'rashumulukaska', {expiresIn: 86400});
-        let userWithToken = {...userExist._doc};
-        const tokenValue = {token: token};
-        Object.assign(userWithToken, tokenValue);
-        return res.json(userWithToken)
-    } catch (err) {
-        console.error(err.menssage);
-        return res.status(400).json({err});
-    }
-});
-
-router.get('/me', tokenValidation, async(req, res) => {
-    try {
-        const userExist = await User.findById(req.userId);
-        //Check is username is correct
-        if(!userExist){
-            return res.status(400).json({msg: 'Username doesnt exist.'})
-        }
-        console.log(userExist)
-        return res.json(userExist)
-    } catch (err) {
-        console.error(err.menssage);
-        return res.status(400).json({err});
-    }
-});
-
-router.get('/users', tokenValidation, async(req, res) => {
-    try {
-        const users = await User.find();
-        //Check is username is correct
-        if(!users){
-            return res.status(400).json({msg: 'Dont have users in bd.'})
-        }
-        console.log(users)
-        return res.json(users)
-    } catch (err) {
-        console.error(err.menssage);
-        return res.status(400).json({err});
-    }
-});
-
-router.delete('/users/:id', tokenValidation, async(req, res) => {
-    try {
-        const user = await User.findByIdAndRemove(req.params.id);
-        //Check is username is correct
-        if(!user){
-            return res.status(400).json({msg: 'User dont exist in bd.'})
-        }
-        console.log(user)
-        return res.json(user)
+        return res.json(consulting)
     } catch (err) {
         console.error(err.menssage);
         return res.status(400).json({err});

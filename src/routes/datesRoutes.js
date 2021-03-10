@@ -96,48 +96,13 @@ router.post('/', async(req, res) => {
             }else{
                 var possible = hour;
             }
-            var codeRoom;
             // aqui termina esta weada
-            // Buscamos un consultorio vacio
-            if(consulting_room == ''){
-                // Vemos la cantidad de citas que tenemos para el dia y para la misma especialidad
-                const consultings = await Book.find({especiality: especiality, date: dateForSearch}).sort({createdAt: -1});
-                // Verificamos si entra entre las cantidades de citas permitidas al dia por consultorio
-                if(consultings.length >= 1 && consultings.length < 15){
-                    // Buscamos los consultorios que contengan la especialidad que se pidio
-                    const consultorios = await Consulting.find({especiality: req.body.especiality}).sort({createdAt: -1});
-                    // Mapeamos para cambiar la variable a un consultorio permitido
-                    const dinero = await Promise.all(Object.values(consultorios).map(async (consultorio) => {
-                        // Buscamos la cantidad de consultorios que tienen un mismo codigo
-                        const alls = await Book.find({consulting_room: consultorio.code, date: dateForSearch}).sort({createdAt: -1});
-                        // Verificamos para que horario es la cita
-                        if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
-                            if(alls.length < 15){
-                                var alguito = consultorio.code;
-                            }else{
-                                return res.status(400).json({msg: 'No hay consultorios disponibles'})
-                            }
-                            var algo = alguito;
-                        }
-                        var algomas = algo;
-                        return algomas
-                    }));
-                    var codeRoom = dinero[0];
-                }else{
-                    // Si es el primer registro se otorga un codigo de consultorio random
-                    const consultings = await Consulting.find({especiality: req.body.especiality}).sort({createdAt: -1});
-                    if(consultings.length <= 0){
-                        return res.status(400).json({msg: 'No existen consultorios para esta especialidad'})
-                    }
-                    var codeRoom = consultings[0].code
-                }
-            }
             const newBook = new Book({
                 date: dateForSearch,
                 code: makeCode(10),
                 patient_id,
                 hour,
-                consulting_room: codeRoom,
+                consulting_room,
                 possible_hour: possible,
                 especiality
             });
@@ -156,10 +121,8 @@ router.post('/', async(req, res) => {
 
 router.post('/consulting', async(req, res) => {
     try {
-        const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality});
-        const consultorios = await Consulting.find({especiality: req.body.especiality});
-        const total = consultorios.length;
-        return res.json([book, total]);
+        const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality, consulting_room: req.body.code});
+        return res.json(book);
     } catch (err) {
         console.error(err.menssage);
         return res.status(500).send('Server error');
