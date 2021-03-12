@@ -125,7 +125,7 @@ router.get('/me', tokenValidation, async(req, res) => {
     }
 });
 
-router.get('/users', tokenValidation, async(req, res) => {
+router.get('/users', async(req, res) => {
     try {
         const users = await User.find();
         //Check is username is correct
