@@ -11,9 +11,6 @@ const Consulting = require('../models/Consulting');
 router.get('/', async(req, res) => {
     try {
         const books = await Book.find().sort({createdAt: -1}).populate('patient_id');
-        if(books.length <= 0){
-            return res.json({msg: 'No data to show.'})
-        }
         return res.json(books);
     } catch (err) {
         console.error(err.message);
@@ -114,7 +111,7 @@ router.post('/', async(req, res) => {
         }
     }else{
         console.log(req.body.hour)
-        return res.status(400).json({msg: 'No me cambie los datos no sea animal.'})
+        return res.status(400).json({msg: 'Los datos ingresados son incorrectos o alterados.'})
     }
     
 });

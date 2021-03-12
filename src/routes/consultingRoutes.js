@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Consulting = require('../models/Consulting');
 const Book = require('../models/Book');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const tokenValidation = require('../libs/verifyToken');
 
 router.post('/', async(req, res) => {
     try {
@@ -60,7 +57,7 @@ router.put('/:id', async(req, res) => {
     try {
         const {name, code, especiality} = req.body;
         const roomExist = await Consulting.findOne({name: req.body.name});
-        if(roomExist){
+        if(roomExist._id != req.params.id){
             return res.status(400).json({msg: 'Consultorio ya existe.'})
         }
         const roomToEdit = ({
@@ -74,7 +71,7 @@ router.put('/:id', async(req, res) => {
     }
 });
 
-router.delete('/:id', tokenValidation, async(req, res) => {
+router.delete('/:id', async(req, res) => {
     try {
         const consulting = await Consulting.findByIdAndRemove(req.params.id);
         await Book.deleteMany({consulting_room: consulting.code});
