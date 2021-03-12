@@ -11,9 +11,6 @@ const Consulting = require('../models/Consulting');
 router.get('/', async(req, res) => {
     try {
         const books = await Book.find().sort({createdAt: -1}).populate('patient_id');
-        if(books.length <= 0){
-            return res.json({msg: 'No data to show.'})
-        }
         return res.json(books);
     } catch (err) {
         console.error(err.message);
