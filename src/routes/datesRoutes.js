@@ -111,7 +111,7 @@ router.post('/', async(req, res) => {
         }
     }else{
         console.log(req.body.hour)
-        return res.status(400).json({msg: 'No me cambie los datos no sea animal.'})
+        return res.status(400).json({msg: 'Los datos ingresados son incorrectos o alterados.'})
     }
     
 });

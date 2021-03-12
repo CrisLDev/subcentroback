@@ -48,7 +48,7 @@ router.put('/:id', async(req, res) => {
     try {
         const {name} = req.body;
         const especialityExist = await Especiality.findOne({name: req.body.name});
-        if(especialityExist){
+        if(especialityExist._id != req.params.id){
             return res.status(400).json({msg: 'Especialidad ya existe.'})
         }
         const especialityToEdit = ({

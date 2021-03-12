@@ -57,7 +57,7 @@ router.put('/:id', async(req, res) => {
     try {
         const {name, code, especiality} = req.body;
         const roomExist = await Consulting.findOne({name: req.body.name});
-        if(roomExist){
+        if(roomExist._id != req.params.id){
             return res.status(400).json({msg: 'Consultorio ya existe.'})
         }
         const roomToEdit = ({
