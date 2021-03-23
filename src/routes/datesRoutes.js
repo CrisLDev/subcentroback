@@ -10,7 +10,20 @@ const Consulting = require('../models/Consulting');
 //@access   Public
 router.get('/', async(req, res) => {
     try {
-        const books = await Book.find().sort({createdAt: -1}).populate('patient_id');
+        const books = await Book.find({consulting_room: 'C1'}).sort({createdAt: -1}).populate('patient_id');
+        return res.json(books);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
+//@Route    GET api/dates
+//@desc     Test route
+//@access   Public
+router.get('/:consultingroom', async(req, res) => {
+    try {
+        const books = await Book.find({consulting_room: req.params.consultingroom}).sort({createdAt: -1}).populate('patient_id');
         return res.json(books);
     } catch (err) {
         console.error(err.message);
