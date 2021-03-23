@@ -60,6 +60,16 @@ router.get('/consult/:code', async(req, res) => {
     }
 });
 
+router.get('/consult/userLoged/:userId', async(req, res) => {
+    try {
+        const dates = await Book.find({patient_id: req.params.userId}).populate('patient_id');
+        return res.json(dates);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
 router.post('/', async(req, res) => {
     // Verificamos si la hora a registrar es valida
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
