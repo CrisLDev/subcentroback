@@ -4,6 +4,9 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const tokenValidation = require('../libs/verifyToken');
+const helpers = require('../libs/libs');
+const path = require('path');
+const fs = require('fs-extra');
 
 // Hash Password for security my bro
 const hashPasswords = async (password) => {
@@ -151,6 +154,49 @@ router.delete('/users/:id', tokenValidation, async(req, res) => {
         console.error(err.menssage);
         return res.status(400).json({err});
     }
+});
+
+router.post('/create', async (req, res) => {
+
+    const saveImage =  async () => {
+
+        const imgUrl = helpers.randomNumber();
+
+        const images = await User.find({ imgUrl: imgUrl });
+
+        if(images.length > 0){
+            saveImage();
+        } else {
+
+                const imageTempPath = req.file.path;
+
+                const ext = path.extname(req.file.originalname).toLocaleLowerCase();
+
+                const targetPath = path.resolve(`src/public/upload/${imgUrl}${ext}`);
+
+                if(ext === '.png' || ext === '.jpg' || ext === '.jpeg'|| ext === '.gif'){
+
+                    await fs.rename(imageTempPath, targetPath);
+
+                    const userToEdit = ({
+                        imgUrl: imgUrl + ext
+                    });
+                    const userEdited = await User.findByIdAndUpdate(req.body.idUser, userToEdit, {new: true});
+                    return res.json(userEdited);
+
+                }else{
+
+                    await fs.unlink(imageTempPath);
+
+                    res.status(500).json({error: 'Only images are allowed'});
+                }
+
+            }
+
+        };
+
+    saveImage();
+
 });
 
 module.exports = router;
