@@ -71,9 +71,9 @@ router.get('/consult/userLoged/:userId', async(req, res) => {
     }
 });
 
-router.get('/consult/doctorLoged/:id', tokenValidation, async(req, res) => {
+router.post('/consult/doctorLoged', async(req, res) => {
     try {
-        const dates = await Book.find({doctor_id: req.params.doctorId}).populate('patient_id').populate('doctor_id');
+        const dates = await Book.find({doctor_id: req.body.id}).populate('patient_id').populate('doctor_id');
         return res.json(dates);
     } catch (err) {
         console.error(err.message);
@@ -229,6 +229,23 @@ router.put('/:id', async(req, res) => {
             doctor_id:doctor
         };
         const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true}).populate('doctor_id');
+        res.json(bookUpdated);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(500).send('Server error');
+    }
+});
+
+router.put('/check/:id', async(req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+        if(!book){
+            return res.json({msg: 'No data to edit.'})
+        }
+        const bookToEdit = {
+            complete: 'si'
+        };
+        const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true});
         res.json(bookUpdated);
     } catch (err) {
         console.error(err.menssage);
