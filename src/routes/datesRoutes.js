@@ -71,6 +71,13 @@ router.get('/consult/userLoged/:userId', async(req, res) => {
 });
 
 router.post('/', async(req, res) => {
+
+    // Verificamos que el usuario no pueda crear mas de una cita al dia
+    const cantidadDeCitas = await Book.find({patient_id: req.body.patient_id, date: req.body.dateForSearch});
+    if(cantidadDeCitas.length > 0){
+        return res.status(400).json({msg: 'Solo puedes crear una consulta para el mismo dia.'})
+    }
+
     // Verificamos si la hora a registrar es valida
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
