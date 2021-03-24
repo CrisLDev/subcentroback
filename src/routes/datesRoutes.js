@@ -4,13 +4,27 @@ const Book = require('../models/Book');
 const User = require('../models/User');
 const moment = require('moment');
 const Consulting = require('../models/Consulting');
+const tokenValidation = require('../libs/verifyToken');
 
 //@Route    GET api/dates
 //@desc     Test route
 //@access   Public
 router.get('/', async(req, res) => {
     try {
-        const books = await Book.find().sort({createdAt: -1}).populate('patient_id');
+        const books = await Book.find({consulting_room: 'C1'}).sort({createdAt: -1}).populate('doctor_id').populate('patient_id');
+        return res.json(books);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
+//@Route    GET api/dates
+//@desc     Test route
+//@access   Public
+router.get('/:consultingroom', async(req, res) => {
+    try {
+        const books = await Book.find({consulting_room: req.params.consultingroom}).sort({createdAt: -1}).populate('patient_id').populate('doctor_id');
         return res.json(books);
     } catch (err) {
         console.error(err.message);
@@ -47,11 +61,38 @@ router.get('/consult/:code', async(req, res) => {
     }
 });
 
+router.get('/consult/userLoged/:userId', async(req, res) => {
+    try {
+        const dates = await Book.find({patient_id: req.params.userId}).populate('patient_id').populate('doctor_id');
+        return res.json(dates);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
+router.get('/consult/doctorLoged/:id', tokenValidation, async(req, res) => {
+    try {
+        const dates = await Book.find({doctor_id: req.params.doctorId}).populate('patient_id').populate('doctor_id');
+        return res.json(dates);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
 router.post('/', async(req, res) => {
+
+    // Verificamos que el usuario no pueda crear mas de una cita al dia
+    const cantidadDeCitas = await Book.find({patient_id: req.body.patient_id, date: req.body.dateForSearch});
+    if(cantidadDeCitas.length > 0){
+        return res.status(400).json({msg: 'Solo puedes crear una consulta para el mismo dia.'})
+    }
+
     // Verificamos si la hora a registrar es valida
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
-            const {dateForSearch, hour, patient_id, consulting_room, especiality} = req.body;
+            const {dateForSearch, hour, patient_id, especiality} = req.body;
             // Creamos el codigo para la cita
             function makeCode(length) {
                 var result           = '';
@@ -62,6 +103,36 @@ router.post('/', async(req, res) => {
                 }
                 return result;
             }
+            
+            //
+            
+              const consultorios = await Consulting.find({especiality: especiality});
+                const consultoriosDisponible = await Promise.all(Object.values(consultorios).map(
+                    async (consultorio) => {
+                        const consultorioDisponible = await Book.find({consulting_room: consultorio.code, date: dateForSearch, hour: hour});
+                        if(req.body.hour === '09:00' || req.body.hour === '13:00' || req.body.hour === '15:00'){
+                            if(consultorioDisponible.length <= 3){
+                                var algooo = [];
+                                algooo.push(consultorio.code)
+                            }
+                        }
+                        if(req.body.hour === "11:00"){
+                            if(consultorioDisponible.length <= 1){
+                                var algooo = [];
+                                algooo.push(consultorio.code)
+                            }
+                        }
+                        return algooo;
+                    }
+                ));
+                var consultorioss = consultoriosDisponible.sort((a,b) => a.length - b.length);
+
+                if(consultoriosDisponible[0] === undefined){
+                    return res.status(400).json({msg: 'No hay consultorios bros.'})
+                }
+
+            //   
+            
             // Buscamos los doctores disponibles
             const doctors = await User.find({role: "doctor"});
             const doctorsId = doctors.map(async function(doctor) {
@@ -71,8 +142,9 @@ router.post('/', async(req, res) => {
                 //}
                 return algo = numeroDeCitasPorDoctor.length;
             });
+
             // Buscando la ultima hora guardada para aumentarla
-            const book = await Book.findOne({date: req.body.dateForSearch, hour: req.body.hour}).sort({createdAt: -1});
+            const book = await Book.findOne({date: req.body.dateForSearch,consulting_room: consultoriosDisponible[0][0], hour: req.body.hour}).sort({createdAt: -1});
             if(book){/*
                 function addMinutes(time, minsToAdd) {
                     function D(J){ return (J<10? '0':'') + J;};
@@ -94,12 +166,13 @@ router.post('/', async(req, res) => {
                 var possible = hour;
             }
             // aqui termina esta weada
+
             const newBook = new Book({
                 date: dateForSearch,
                 code: makeCode(10),
                 patient_id,
                 hour,
-                consulting_room,
+                consulting_room: consultoriosDisponible[0][0],
                 possible_hour: possible,
                 especiality
             });
@@ -118,15 +191,16 @@ router.post('/', async(req, res) => {
 
 router.post('/consulting', async(req, res) => {
     try {
-        const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality, consulting_room: req.body.code});
-        return res.json(book);
+        const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality});
+        const rooms = await Consulting.find({especiality: req.body.especiality});
+        return res.json({book,rooms});
     } catch (err) {
         console.error(err.menssage);
         return res.status(500).send('Server error');
     }
 });
 
-router.put('/:id', async(req, res) => {
+/*router.put('/:id', async(req, res) => {
     try {
         const book = await Book.findById(req.params.id);
         if(!book){
@@ -137,6 +211,24 @@ router.put('/:id', async(req, res) => {
             date, code, consulting_room
         };
         const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true});
+        res.json(bookUpdated);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(500).send('Server error');
+    }
+});*/
+
+router.put('/:id', async(req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+        if(!book){
+            return res.json({msg: 'No data to edit.'})
+        }
+        const {doctor} = req.body;
+        const bookToEdit = {
+            doctor_id:doctor
+        };
+        const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true}).populate('doctor_id');
         res.json(bookUpdated);
     } catch (err) {
         console.error(err.menssage);

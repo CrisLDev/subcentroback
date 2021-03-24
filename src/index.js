@@ -2,6 +2,8 @@ const express = require('express');
 const connectDB = require('./database');
 const morgan = require('morgan');
 const cors = require('cors');
+const multer  = require('multer')
+const path = require('path');
 const app = express();
 
 connectDB();
@@ -17,6 +19,11 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 app.get('/', (req, res) => res.send('Api is running'))
+
+// This folder for this application will be used to store public files
+app.use(multer({dest: path.join(__dirname, '../public/upload/temp')}).single('photo'));
+
+app.use("/public", express.static(path.join(__dirname, "./public")));
 
 // Routes
 app.use('/api/dates', require('./routes/datesRoutes'));
