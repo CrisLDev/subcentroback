@@ -4,13 +4,14 @@ const Book = require('../models/Book');
 const User = require('../models/User');
 const moment = require('moment');
 const Consulting = require('../models/Consulting');
+const tokenValidation = require('../libs/verifyToken');
 
 //@Route    GET api/dates
 //@desc     Test route
 //@access   Public
 router.get('/', async(req, res) => {
     try {
-        const books = await Book.find({consulting_room: 'C1'}).sort({createdAt: -1}).populate('patient_id');
+        const books = await Book.find({consulting_room: 'C1'}).sort({createdAt: -1}).populate('doctor_id').populate('patient_id');
         return res.json(books);
     } catch (err) {
         console.error(err.message);
@@ -23,7 +24,7 @@ router.get('/', async(req, res) => {
 //@access   Public
 router.get('/:consultingroom', async(req, res) => {
     try {
-        const books = await Book.find({consulting_room: req.params.consultingroom}).sort({createdAt: -1}).populate('patient_id');
+        const books = await Book.find({consulting_room: req.params.consultingroom}).sort({createdAt: -1}).populate('patient_id').populate('doctor_id');
         return res.json(books);
     } catch (err) {
         console.error(err.message);
@@ -62,7 +63,17 @@ router.get('/consult/:code', async(req, res) => {
 
 router.get('/consult/userLoged/:userId', async(req, res) => {
     try {
-        const dates = await Book.find({patient_id: req.params.userId}).populate('patient_id');
+        const dates = await Book.find({patient_id: req.params.userId}).populate('patient_id').populate('doctor_id');
+        return res.json(dates);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).send('Server error');
+    }
+});
+
+router.get('/consult/doctorLoged/:id', tokenValidation, async(req, res) => {
+    try {
+        const dates = await Book.find({doctor_id: req.params.doctorId}).populate('patient_id').populate('doctor_id');
         return res.json(dates);
     } catch (err) {
         console.error(err.message);
@@ -189,7 +200,7 @@ router.post('/consulting', async(req, res) => {
     }
 });
 
-router.put('/:id', async(req, res) => {
+/*router.put('/:id', async(req, res) => {
     try {
         const book = await Book.findById(req.params.id);
         if(!book){
@@ -200,6 +211,24 @@ router.put('/:id', async(req, res) => {
             date, code, consulting_room
         };
         const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true});
+        res.json(bookUpdated);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(500).send('Server error');
+    }
+});*/
+
+router.put('/:id', async(req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+        if(!book){
+            return res.json({msg: 'No data to edit.'})
+        }
+        const {doctor} = req.body;
+        const bookToEdit = {
+            doctor_id:doctor
+        };
+        const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true}).populate('doctor_id');
         res.json(bookUpdated);
     } catch (err) {
         console.error(err.menssage);

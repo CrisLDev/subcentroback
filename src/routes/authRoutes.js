@@ -142,6 +142,20 @@ router.get('/users', async(req, res) => {
     }
 });
 
+router.get('/doctors', async(req, res) => {
+    try {
+        const doctors = await User.find({role: 'doctor'});
+        //Check is username is correct
+        if(!doctors){
+            return res.status(400).json({msg: 'Dont have doctors in bd.'})
+        }
+        return res.json(doctors)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
 router.delete('/users/:id', tokenValidation, async(req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id);

@@ -6,6 +6,11 @@ const BookSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
+    doctor_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        default: null
+    },
     date:{
         type: String,
         required: true
@@ -28,6 +33,11 @@ const BookSchema = new mongoose.Schema({
     },
     especiality:{
         type: String,
+        required: true
+    },
+    complete: {
+        type: String,
+        default: 'no',
         required: true
     }
 }, {timestamps: true, versionKey: false});
