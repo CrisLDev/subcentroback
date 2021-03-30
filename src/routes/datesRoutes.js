@@ -73,7 +73,7 @@ router.get('/consult/userLoged/:userId', async(req, res) => {
 
 router.post('/consult/doctorLoged', async(req, res) => {
     try {
-        const dates = await Book.find({doctor_id: req.body.id}).populate('patient_id').populate('doctor_id');
+        const dates = await Book.find({doctor_id: req.body.id}).sort({createdAt: -1}).populate('patient_id').populate('doctor_id');
         return res.json(dates);
     } catch (err) {
         console.error(err.message);
