@@ -4,16 +4,16 @@ const Schedule = require('../models/Schedule');
 
 router.post('/', async(req, res) => {
     try {
-        const {dateStart, hourStart, dateEnd, hourEnd, doctor_id} = req.body;
+        const {/*dateStart,*/ hourStart, /*dateEnd,*/ hourEnd, doctor_id, day} = req.body;
 
-        const scheduleExist = await Schedule.findOne({dateStart: dateStart, hourStart: hourStart});
+        const scheduleExist = await Schedule.findOne({dateStart: hourStart, dateEnd: hourEnd, doctor_id: doctor_id, day: day});
 
         if(scheduleExist){
             return res.status(400).json({msg: 'Schedule already exist.'})
         }
 
         const newSchedule = new Schedule({
-            dateStart, hourStart, dateEnd, hourEnd, doctor_id
+            dateStart: hourStart, day, dateEnd: hourEnd, doctor_id, title: 'Horario'
         });
 
         const scheduleSave = await newSchedule.save();

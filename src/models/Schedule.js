@@ -6,22 +6,30 @@ const ScheduleSchema = new mongoose.Schema({
         ref: 'user',
         default: null
     },
+    //dateStart:{
+        //type: String,
+        //required: true
+    //},
     dateStart:{
         type: String,
         required: true
     },
-    hourStart:{
-        type: String,
-        required: true
-    },
+    //dateEnd:{
+        //type: String,
+        //required: true
+    //},
     dateEnd:{
         type: String,
         required: true
     },
-    hourEnd:{
+    day:{
         type: String,
         required: true
-    }
+    },
+    title:{
+        type: String,
+        required: true
+    },
 }, {timestamps: true, versionKey: false});
 
 module.exports = Schedule = mongoose.model('schedule', ScheduleSchema);
