@@ -26,9 +26,9 @@ router.post('/', async(req, res) => {
     }
 });
 
-router.get('/', async(req, res) => {
+router.get('/:id', async(req, res) => {
     try {
-        const schedules = await Schedule.find().populate('doctor_id');
+        const schedules = await Schedule.find({doctor_id: req.params.id}).populate('doctor_id');
         return res.json(schedules);
     } catch (err) {
         console.error(err.menssage);
