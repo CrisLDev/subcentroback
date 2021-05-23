@@ -31,5 +31,6 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/consulting', require('./routes/consultingRoutes'));
 app.use('/api/especialities', require('./routes/especialitiesRoutes'));
 app.use('/api/schedules', require('./routes/scheduleRoutes'));
+app.use('/api/histories', require('./routes/historyRoutes'));
 
 app.listen(PORT, () => { console.log('Server is running on port', PORT) });

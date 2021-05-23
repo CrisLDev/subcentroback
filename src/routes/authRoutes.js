@@ -156,6 +156,34 @@ router.get('/doctors', async(req, res) => {
     }
 });
 
+router.get('/patients', async(req, res) => {
+    try {
+        const patients = await User.find({role: 'user'});
+        //Check is username is correct
+        if(!patients){
+            return res.status(400).json({msg: 'Dont have patients in bd.'})
+        }
+        return res.json(patients)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
+router.get('/patients/:id', async(req, res) => {
+    try {
+        const patient = await User.findOne({role: 'user', _id: req.params.id});
+        //Check is username is correct
+        if(!patient){
+            return res.status(400).json({msg: 'Patient dont exist in bd.'})
+        }
+        return res.json(patient)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
 router.delete('/users/:id', tokenValidation, async(req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id);
