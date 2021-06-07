@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         trim: true
     },
+    dni: {
+        type: Number,
+        trim: true
+    },
     role: {
         type: String,
         trim: true,

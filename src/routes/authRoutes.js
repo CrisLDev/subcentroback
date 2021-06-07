@@ -21,7 +21,7 @@ const validatePassword = async (password, passwordFromRequest) => {
 
 router.post('/register', async(req, res) => {
     try {
-        const {userName, email, password, role} = req.body;
+        const {userName, email, password, role, adress, fullName, age, telephoneNumber, dni} = req.body;
         // Check if user already exist
         const userByNameExist = await User.findOne({userName});
         
@@ -36,7 +36,14 @@ router.post('/register', async(req, res) => {
             userName, email, password
         });
         if(role !== ''){
-            Object.assign(newUser, {role: role});
+            Object.assign(newUser, {
+                role: role,
+                adress: adress,
+                fullName: fullName,
+                age: age,
+                telephoneNumber: telephoneNumber,
+                dni: dni
+            });
         }
         newUser.password = await hashPasswords(password);
         const userSaved = await newUser.save();
@@ -49,7 +56,7 @@ router.post('/register', async(req, res) => {
 
 router.put('/user', async(req, res) => {
     try {
-        const {userName, email, password, password2, adress, fullName, age, user_id, imgUrl, telephoneNumber, role} = req.body;
+        const {userName, email, password, password2, adress, fullName, age, user_id, imgUrl, telephoneNumber, dni, role} = req.body;
         const userExist = await User.findById(user_id);
         const userByNameExist = await User.findOne({userName});
         if(userByNameExist && userByNameExist._id != user_id){
@@ -63,7 +70,7 @@ router.put('/user', async(req, res) => {
             return res.status(400).json({msg: 'User doenst exist.'})
         }
         const userToEdit = ({
-            userName, email, adress, fullName, age, telephoneNumber
+            userName, email, adress, fullName, age, telephoneNumber, dni
         });
         if(password !== ''){
             if(req.body.password != req.body.password2){
