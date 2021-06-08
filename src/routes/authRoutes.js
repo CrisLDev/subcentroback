@@ -7,6 +7,7 @@ const tokenValidation = require('../libs/verifyToken');
 const helpers = require('../libs/libs');
 const path = require('path');
 const fs = require('fs-extra');
+const Book = require('../models/Book');
 
 // Hash Password for security my bro
 const hashPasswords = async (password) => {
@@ -194,6 +195,7 @@ router.get('/patients/:id', async(req, res) => {
 router.delete('/users/:id', tokenValidation, async(req, res) => {
     try {
         const user = await User.findByIdAndRemove(req.params.id);
+        const Books = await Book.deleteMany({patient_id: req.params.id});
         //Check is username is correct
         if(!user){
             return res.status(400).json({msg: 'User dont exist in bd.'})
