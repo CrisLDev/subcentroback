@@ -1,57 +1,151 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const HistorySchema = new mongoose.Schema({
-    patient_id: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
-    user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
-    non_communicable_diseases:{
-        type: Array
+const HistorySchema = new mongoose.Schema(
+  {
+    patient_id: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    non_communicable_diseases: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    sexually_transmitted_diseases: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    degenerative_diseases: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    others: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    blood_type: {
+      type: String,
+      required: true,
     },
-    sexually_transmitted_diseases:{
-        type: Array
+    adictions: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    allergies: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    antibiotics: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    has_been_hospitalized: {
+      type: String,
     },
-    degenerative_diseases:{
-        type: Array
+    respiratory: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    cardiovascular: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    genitourinary: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    endocrine: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    nervous: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    muscular: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+      },
+    ],
+    conclusions: {
+      type: String,
     },
-    others:{
-        type: Array
-    },
-    blood_type:{
-        type: String,
-        required: true
-    },
-    adictions:{
-        type: Array
-    },
-    allergies:{
-        type: Array
-    },
-    antibiotics:{
-        type: Array
-    },
-    has_been_hospitalized:{
-        type: Array
-    },
-    respiratory:{
-        type: Array
-    },
-    cardiovascular:{
-        type: Array
-    },
-    genitourinary:{
-        type: Array
-    },
-    endocrine:{
-        type: Array
-    },
-    nervous:{
-        type: Array
-    },
-    muscular:{
-        type: Array
-    },
-    conclusions:{
-        type: String
-    }
-}, {timestamps: true, versionKey: false});
+  },
+  { timestamps: true, versionKey: false }
+);
 
-module.exports = History = mongoose.model('history', HistorySchema);
+module.exports = History = mongoose.model("history", HistorySchema);
