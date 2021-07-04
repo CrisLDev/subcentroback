@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 const User = require('../models/User');
+const Schedule = require('../models/Schedule');
 const moment = require('moment');
 const Consulting = require('../models/Consulting');
 const tokenValidation = require('../libs/verifyToken');
@@ -92,7 +93,7 @@ router.post('/', async(req, res) => {
     // Verificamos si la hora a registrar es valida
     if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
-            const {dateForSearch, hour, patient_id, especiality} = req.body;
+            const {dateForSearch, hour, patient_id, especiality, doctor_id} = req.body;
             // Creamos el codigo para la cita
             function makeCode(length) {
                 var result           = '';
@@ -128,7 +129,7 @@ router.post('/', async(req, res) => {
                 var consultorioss = consultoriosDisponible.sort((a,b) => a.length - b.length);
 
                 if(consultoriosDisponible[0] === undefined){
-                    return res.status(400).json({msg: 'No hay consultorios bros.'})
+                    return res.status(400).json({msg: 'No hay consultorios.'})
                 }
 
             //   
@@ -176,6 +177,11 @@ router.post('/', async(req, res) => {
                 possible_hour: possible,
                 especiality
             });
+            if(doctor_id != ''){
+                Object.assign(
+                    newBook, {doctor_id}
+                );
+            }
             const bookSaved = await newBook.save();
             res.json(bookSaved);
         } catch (err) {
@@ -193,7 +199,25 @@ router.post('/consulting', async(req, res) => {
     try {
         const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality});
         const rooms = await Consulting.find({especiality: req.body.especiality});
-        return res.json({book,rooms});
+        const {day} = req.body;
+        let dayToConsult;
+        if ( day ===  4) dayToConsult = '01';
+        if ( day ===  5) dayToConsult = '02';
+        if ( day ===  6) dayToConsult = '03';
+        if ( day ===  7) dayToConsult = '04';
+        if ( day ===  8) dayToConsult = '05';
+        var doctors = [];
+        if ( req.body.admin === true ) {
+            const schedules = await Schedule.find({day: dayToConsult});
+            await Promise.all(Object.values(schedules).map(async (item) => {
+                const books = await Book.find({doctor_id: item.doctor_id, date: req.body.dateForSearch});
+                if (books.length < 17) {
+                    const doctor = await User.findOne({_id: item.doctor_id});
+                    doctors.push(doctor);
+                }
+            }));
+        }
+        return res.json({book,rooms, doctors});
     } catch (err) {
         console.error(err.menssage);
         return res.status(500).send('Server error');
