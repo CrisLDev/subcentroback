@@ -12,6 +12,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     sexually_transmitted_diseases: [
@@ -22,6 +26,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     degenerative_diseases: [
@@ -32,6 +40,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     others: [
@@ -42,6 +54,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     blood_type: {
@@ -56,6 +72,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     allergies: [
@@ -66,6 +86,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     antibiotics: [
@@ -76,6 +100,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     has_been_hospitalized: {
@@ -89,6 +117,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     cardiovascular: [
@@ -99,6 +131,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     genitourinary: [
@@ -109,6 +145,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     endocrine: [
@@ -119,6 +159,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     nervous: [
@@ -129,6 +173,10 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     muscular: [
@@ -139,10 +187,72 @@ const HistorySchema = new mongoose.Schema(
         data: {
           type: String,
         },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
       },
     ],
     conclusions: {
       type: String,
+    },
+    symptom: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
+    hereditary: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
+    disabilities: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
+    temperature: {
+      type: String,
+      required: true,
+    },
+    pulse: {
+      type: String,
+      required: true,
+    },
+    frequency: {
+      type: String,
+      required: true,
+    },
+    presure: {
+      type: String,
+      required: true,
     },
   },
   { timestamps: true, versionKey: false }
