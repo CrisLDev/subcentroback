@@ -20,7 +20,10 @@ router.post('/', async(req, res) => {
     const nervous = req.body.nervous ? req.body.nervous : '';
     const muscular = req.body.muscular ? req.body.muscular : '';
     const conclusions = req.body.conclusions ? req.body.conclusions : '';
-    const {patient_id ,user_id} = req.body;
+    const symptom = req.body.symptom ? req.body.symptom : '';
+    const hereditary = req.body.hereditary ? req.body.hereditary : '';
+    const disabilities = req.body.disabilities ? req.body.disabilities : '';
+    const {patient_id, user_id,temperature, frequency, pulse, presure} = req.body;
     
     const non_communicable_diseases_array = non_communicable_diseases === '' || undefined ? 'No aplica' : non_communicable_diseases.split(",");
     const sexually_transmitted_diseases_array = sexually_transmitted_diseases === '' || undefined ? 'No aplica' : sexually_transmitted_diseases.split(",");
@@ -35,13 +38,23 @@ router.post('/', async(req, res) => {
     const endocrine_array = endocrine === '' || undefined ? 'No aplica' : endocrine.split(",");
     const nervous_array = nervous === '' || undefined ? 'No aplica' : nervous.split(",");
     const muscular_array = muscular === '' || undefined ? 'No aplica' : muscular.split(",");
+    const symptom_array = symptom  === '' || undefined ? 'No aplica' : symptom.split(",");
+    const hereditary_array = hereditary  === '' || undefined ? 'No aplica' : hereditary.split(",");
+    const disabilities_array = disabilities  === '' || undefined ? 'No aplica' : disabilities.split(",");
 
     const history = new History({
         blood_type,
         has_been_hospitalized,
         conclusions,
         patient_id,
-        user_id
+        user_id,
+        frequency,
+        pulse,
+        presure,
+        symptom_array,
+        hereditary_array,
+        disabilities_array,
+        temperature
     });
 
     non_communicable_diseases_array.forEach((disease) =>
@@ -83,12 +96,21 @@ router.post('/', async(req, res) => {
     muscular_array.forEach((disease) =>
         history.muscular.unshift({_id: ObjectId(),data: disease})
     );
+    symptom_array.forEach((disease) =>
+        history.symptom.unshift({_id: ObjectId(),data: disease})
+    );
+    hereditary_array.forEach((disease) =>
+        history.hereditary.unshift({_id: ObjectId(),data: disease})
+    );
+    disabilities_array.forEach((disease) =>
+        history.disabilities.unshift({_id: ObjectId(),data: disease})
+    );
 
     try{
 
         const savedHistory = await history.save();
 
-        return res.status(200).json({msg: "Historia médica guardada correctamente."})
+        return res.status(200).json({savedHistory})
     }catch(err){
         console.log(err)
         res.status(400).send(err);
@@ -126,14 +148,22 @@ router.put('/:id', async(req, res) => {
             blood_type,
             has_been_hospitalized,
             conclusions,
-            user_id
+            user_id,
+            frequency,
+            pulse,
+            presure,
+            temperature
         } = req.body;
 
         const historyToEdit = ({
             blood_type,
             has_been_hospitalized,
             conclusions,
-            user_id
+            user_id,
+            frequency,
+            pulse,
+            presure,
+            temperature
         });
 
         const updatedHistory = await History.findOneAndUpdate({_id: req.params.id}, historyToEdit, {new: true});
@@ -213,6 +243,22 @@ router.put('/:id/item', async(req, res) => {
             editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
             history.muscular = editedHistory;
         }
+        if(req.body.type === 'symptom'){
+            let editedHistory = history.symptom.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.symptom = editedHistory;
+        }
+        if(req.body.type === 'hereditary'){
+            let editedHistory = history.hereditary.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.hereditary = editedHistory;
+        }
+        if(req.body.type === 'disabilities'){
+            let editedHistory = history.disabilities.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.disabilities = editedHistory;
+        }
+        history.date = new Date();
         await history.save();
         return res.status(200).json(history);
     }catch (err){
@@ -262,6 +308,15 @@ router.put('/:id/create', async(req, res) => {
         }
         if(req.body.type === 'muscular'){
             history.muscular.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'symptom'){
+            history.symptom.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'hereditary'){
+            history.hereditary.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'disabilities'){
+            history.disabilities.unshift({_id: ObjectId(), data: req.body.data})
         }
         await history.save();
         return res.status(200).json(history);
@@ -336,6 +391,19 @@ router.put('/:id/:itemId/:type', async(req, res) => {
             let editedHistory = history.muscular.filter((disease) => disease._id != req.params.itemId)
             history.muscular = editedHistory;
         }
+        if(req.params.type === 'symptom'){
+            let editedHistory = history.symptom.filter((disease) => disease._id != req.params.itemId)
+            history.symptom = editedHistory;
+        }
+        if(req.params.type === 'hereditary'){
+            let editedHistory = history.hereditary.filter((disease) => disease._id != req.params.itemId)
+            history.hereditary = editedHistory;
+        }
+        if(req.params.type === 'disabilities'){
+            let editedHistory = history.disabilities.filter((disease) => disease._id != req.params.itemId)
+            history.disabilities = editedHistory;
+        }
+        history.date = new Date();
         await history.save();
         return res.status(200).json(history);
     }catch (err){
