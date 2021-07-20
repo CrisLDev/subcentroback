@@ -318,6 +318,7 @@ router.put('/:id/create', async(req, res) => {
         if(req.body.type === 'disabilities'){
             history.disabilities.unshift({_id: ObjectId(), data: req.body.data})
         }
+        history.date = Date.now();
         await history.save();
         return res.status(200).json(history);
     }catch (err){
@@ -340,7 +341,6 @@ router.put('/:id/:itemId/:type', async(req, res) => {
         const history = await History.findById(req.params.id);
         if(req.params.type === 'non_communicable_diseases'){
             let editedHistory = history.non_communicable_diseases.filter((disease) => disease._id != req.params.itemId)
-            console.log(editedHistory)
             history.non_communicable_diseases = editedHistory;
         }
         if(req.params.type === 'sexually_transmitted_diseases'){
@@ -403,7 +403,7 @@ router.put('/:id/:itemId/:type', async(req, res) => {
             let editedHistory = history.disabilities.filter((disease) => disease._id != req.params.itemId)
             history.disabilities = editedHistory;
         }
-        history.date = new Date();
+        history.date = Date.now();
         await history.save();
         return res.status(200).json(history);
     }catch (err){
