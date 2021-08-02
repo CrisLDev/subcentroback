@@ -238,22 +238,62 @@ const HistorySchema = new mongoose.Schema(
         }
       },
     ],
-    temperature: {
-      type: String,
-      required: true,
-    },
-    pulse: {
-      type: String,
-      required: true,
-    },
-    frequency: {
-      type: String,
-      required: true,
-    },
-    presure: {
-      type: String,
-      required: true,
-    },
+    temperature: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
+    pulse: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
+    frequency: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
+    presure: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        data: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now()
+        }
+      },
+    ],
   },
   { timestamps: true, versionKey: false }
 );

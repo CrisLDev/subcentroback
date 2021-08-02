@@ -23,7 +23,11 @@ router.post('/', async(req, res) => {
     const symptom = req.body.symptom ? req.body.symptom : '';
     const hereditary = req.body.hereditary ? req.body.hereditary : '';
     const disabilities = req.body.disabilities ? req.body.disabilities : '';
-    const {patient_id, user_id,temperature, frequency, pulse, presure} = req.body;
+    const pulse = req.body.pulse ? req.body.pulse : '';
+    const frequency = req.body.frequency ? req.body.frequency : '';
+    const temperature = req.body.temperature ? req.body.temperature : '';
+    const presure = req.body.presure ? req.body.presure : '';
+    const {patient_id, user_id} = req.body;
     
     const non_communicable_diseases_array = non_communicable_diseases === '' || undefined ? 'No aplica' : non_communicable_diseases.split(",");
     const sexually_transmitted_diseases_array = sexually_transmitted_diseases === '' || undefined ? 'No aplica' : sexually_transmitted_diseases.split(",");
@@ -41,6 +45,10 @@ router.post('/', async(req, res) => {
     const symptom_array = symptom  === '' || undefined ? 'No aplica' : symptom.split(",");
     const hereditary_array = hereditary  === '' || undefined ? 'No aplica' : hereditary.split(",");
     const disabilities_array = disabilities  === '' || undefined ? 'No aplica' : disabilities.split(",");
+    const pulse_array = pulse  === '' || undefined ? 'No aplica' : pulse.split(",");
+    const frequency_array = frequency  === '' || undefined ? 'No aplica' : frequency.split(",");
+    const temperature_array = temperature  === '' || undefined ? 'No aplica' : temperature.split(",");
+    const presure_array = presure  === '' || undefined ? 'No aplica' : presure.split(",");
 
     const history = new History({
         blood_type,
@@ -48,13 +56,6 @@ router.post('/', async(req, res) => {
         conclusions,
         patient_id,
         user_id,
-        frequency,
-        pulse,
-        presure,
-        symptom_array,
-        hereditary_array,
-        disabilities_array,
-        temperature
     });
 
     non_communicable_diseases_array.forEach((disease) =>
@@ -105,6 +106,18 @@ router.post('/', async(req, res) => {
     disabilities_array.forEach((disease) =>
         history.disabilities.unshift({_id: ObjectId(),data: disease})
     );
+    pulse_array.forEach((disease) =>
+        history.pulse.unshift({_id: ObjectId(),data: disease})
+    );
+    temperature_array.forEach((disease) =>
+        history.temperature.unshift({_id: ObjectId(),data: disease})
+    );
+    frequency_array.forEach((disease) =>
+        history.frequency.unshift({_id: ObjectId(),data: disease})
+    );
+    presure_array.forEach((disease) =>
+        history.presure.unshift({_id: ObjectId(),data: disease})
+    );
 
     try{
 
@@ -148,22 +161,14 @@ router.put('/:id', async(req, res) => {
             blood_type,
             has_been_hospitalized,
             conclusions,
-            user_id,
-            frequency,
-            pulse,
-            presure,
-            temperature
+            user_id
         } = req.body;
 
         const historyToEdit = ({
             blood_type,
             has_been_hospitalized,
             conclusions,
-            user_id,
-            frequency,
-            pulse,
-            presure,
-            temperature
+            user_id
         });
 
         const updatedHistory = await History.findOneAndUpdate({_id: req.params.id}, historyToEdit, {new: true});
@@ -258,6 +263,26 @@ router.put('/:id/item', async(req, res) => {
             editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
             history.disabilities = editedHistory;
         }
+        if(req.body.type === 'temperature'){
+            let editedHistory = history.temperature.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.temperature = editedHistory;
+        }
+        if(req.body.type === 'pulse'){
+            let editedHistory = history.pulse.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.pulse = editedHistory;
+        }
+        if(req.body.type === 'frequency'){
+            let editedHistory = history.frequency.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.frequency = editedHistory;
+        }
+        if(req.body.type === 'presure'){
+            let editedHistory = history.presure.filter((disease) => disease._id != req.body.itemId)
+            editedHistory.unshift({_id: req.body.itemId, data: req.body.data})
+            history.presure = editedHistory;
+        }
         history.date = new Date();
         await history.save();
         return res.status(200).json(history);
@@ -317,6 +342,18 @@ router.put('/:id/create', async(req, res) => {
         }
         if(req.body.type === 'disabilities'){
             history.disabilities.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'pulse'){
+            history.pulse.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'temperature'){
+            history.temperature.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'presure'){
+            history.presure.unshift({_id: ObjectId(), data: req.body.data})
+        }
+        if(req.body.type === 'frequency'){
+            history.frequency.unshift({_id: ObjectId(), data: req.body.data})
         }
         history.date = Date.now();
         await history.save();
@@ -402,6 +439,22 @@ router.put('/:id/:itemId/:type', async(req, res) => {
         if(req.params.type === 'disabilities'){
             let editedHistory = history.disabilities.filter((disease) => disease._id != req.params.itemId)
             history.disabilities = editedHistory;
+        }
+        if(req.params.type === 'pulse'){
+            let editedHistory = history.pulse.filter((disease) => disease._id != req.params.itemId)
+            history.pulse = editedHistory;
+        }
+        if(req.params.type === 'temperature'){
+            let editedHistory = history.temperature.filter((disease) => disease._id != req.params.itemId)
+            history.temperature = editedHistory;
+        }
+        if(req.params.type === 'frequency'){
+            let editedHistory = history.frequency.filter((disease) => disease._id != req.params.itemId)
+            history.frequency = editedHistory;
+        }
+        if(req.params.type === 'presure'){
+            let editedHistory = history.presure.filter((disease) => disease._id != req.params.itemId)
+            history.presure = editedHistory;
         }
         history.date = Date.now();
         await history.save();
