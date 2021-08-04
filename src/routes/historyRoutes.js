@@ -58,66 +58,106 @@ router.post('/', async(req, res) => {
         user_id,
     });
 
-    non_communicable_diseases_array.forEach((disease) =>
+    if(non_communicable_diseases_array instanceof Array ){
+        non_communicable_diseases_array.forEach((disease) =>
         history.non_communicable_diseases.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(sexually_transmitted_diseases_array instanceof Array ){
     sexually_transmitted_diseases_array.forEach((disease) =>
         history.sexually_transmitted_diseases.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(degenerative_diseases_array instanceof Array ){
     degenerative_diseases_array.forEach((disease) =>
         history.degenerative_diseases.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(others_array instanceof Array ){
     others_array.forEach((disease) =>
         history.others.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(adictions_array instanceof Array ){
     adictions_array.forEach((disease) =>
         history.adictions.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(allergies_array instanceof Array ){
     allergies_array.forEach((disease) =>
         history.allergies.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(antibiotics_array instanceof Array ){
     antibiotics_array.forEach((disease) =>
         history.antibiotics.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(respiratory_array instanceof Array ){
     respiratory_array.forEach((disease) =>
         history.respiratory.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(cardiovascular_array instanceof Array) {
     cardiovascular_array.forEach((disease) =>
         history.cardiovascular.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(genitourinary_array instanceof Array ){
     genitourinary_array.forEach((disease) =>
         history.genitourinary.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(endocrine_array instanceof Array ){
     endocrine_array.forEach((disease) =>
         history.endocrine.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(nervous_array instanceof Array ){
     nervous_array.forEach((disease) =>
         history.nervous.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(muscular_array instanceof Array ){
     muscular_array.forEach((disease) =>
         history.muscular.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(symptom_array instanceof Array ){
     symptom_array.forEach((disease) =>
         history.symptom.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(hereditary_array instanceof Array ){
     hereditary_array.forEach((disease) =>
         history.hereditary.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(disabilities_array instanceof Array ){
     disabilities_array.forEach((disease) =>
         history.disabilities.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(pulse_array instanceof Array ){
     pulse_array.forEach((disease) =>
         history.pulse.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(temperature_array instanceof Array ){
     temperature_array.forEach((disease) =>
         history.temperature.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(frequency_array instanceof Array ){
     frequency_array.forEach((disease) =>
         history.frequency.unshift({_id: ObjectId(),data: disease})
     );
+    }
+    if(presure_array instanceof Array ){
     presure_array.forEach((disease) =>
         history.presure.unshift({_id: ObjectId(),data: disease})
     );
+    }
 
     try{
 
