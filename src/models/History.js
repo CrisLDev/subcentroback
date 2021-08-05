@@ -61,8 +61,7 @@ const HistorySchema = new mongoose.Schema(
       },
     ],
     blood_type: {
-      type: String,
-      required: true,
+      type: String
     },
     adictions: [
       {
