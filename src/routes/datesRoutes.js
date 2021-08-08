@@ -40,7 +40,7 @@ router.get('/:id', async(req, res) => {
     try {
         const book = await Book.findById(req.params.id);
         if(!book){
-            return res.json({msg: 'No data to show.'})
+            return res.json({msg: 'No hay datos para mostrar.'})
         }
         return res.json(book);
     } catch (err) {
@@ -53,7 +53,7 @@ router.get('/consult/:code', async(req, res) => {
     try {
         const date = await Book.findOne({code: req.params.code});
         if(!date){
-            return res.json({msg: 'No data to show.'})
+            return res.json({msg: 'No hay datos para mostrar.'})
         }
         return res.json(date);
     } catch (err) {
@@ -138,25 +138,12 @@ router.post('/', async(req, res) => {
             const doctors = await User.find({role: "doctor"});
             const doctorsId = doctors.map(async function(doctor) {
                 const numeroDeCitasPorDoctor = await Book.find({doctor_id: doctor._id});
-                //if(numeroDeCitasPorDoctor.length < 5){
-                //    return console.log(numeroDeCitasPorDoctor.length)
-                //}
                 return algo = numeroDeCitasPorDoctor.length;
             });
 
             // Buscando la ultima hora guardada para aumentarla
             const book = await Book.findOne({date: req.body.dateForSearch,consulting_room: consultoriosDisponible[0][0], hour: req.body.hour}).sort({createdAt: -1});
-            if(book){/*
-                function addMinutes(time, minsToAdd) {
-                    function D(J){ return (J<10? '0':'') + J;};
-                    var piece = time.split(':');
-                    var mins = piece[0]*60 + +piece[1] + +minsToAdd;
-    
-                    console.log(mins)
-                  
-                    return D(mins%(24*60)/60 | 0) + ':' + D(mins%60);  
-                }
-                var possible = addMinutes(book.hour, '30');*/
+            if(book){
                 const fecha = book.date + ' ' + book.possible_hour;
                 const date = moment(fecha);
                 date.add(30, 'm');
@@ -224,29 +211,11 @@ router.post('/consulting', async(req, res) => {
     }
 });
 
-/*router.put('/:id', async(req, res) => {
-    try {
-        const book = await Book.findById(req.params.id);
-        if(!book){
-            return res.json({msg: 'No data to edit.'})
-        }
-        const {date, code, consulting_room} = req.body;
-        const bookToEdit = {
-            date, code, consulting_room
-        };
-        const bookUpdated = await Book.findByIdAndUpdate(req.params.id, bookToEdit, {new: true});
-        res.json(bookUpdated);
-    } catch (err) {
-        console.error(err.menssage);
-        return res.status(500).send('Server error');
-    }
-});*/
-
 router.put('/:id', async(req, res) => {
     try {
         const book = await Book.findById(req.params.id);
         if(!book){
-            return res.json({msg: 'No data to edit.'})
+            return res.json({msg: 'Cita no encontrada.'})
         }
         const {doctor} = req.body;
         const bookToEdit = {
@@ -264,7 +233,7 @@ router.put('/check/:id', async(req, res) => {
     try {
         const book = await Book.findById(req.params.id);
         if(!book){
-            return res.json({msg: 'No data to edit.'})
+            return res.json({msg: 'Cita no encontrada.'})
         }
         const bookToEdit = {
             complete: 'si'
@@ -281,7 +250,7 @@ router.delete('/:id', async(req, res) => {
     try {
         const book = await Book.findById(req.params.id);
         if(!book){
-            return res.json({msg: 'No data to delete.'})
+            return res.json({msg: 'Cita no existe.'})
         }
         const bookUpdated = await Book.findByIdAndDelete(req.params.id);
         res.json(bookUpdated);

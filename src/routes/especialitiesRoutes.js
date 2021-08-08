@@ -71,7 +71,7 @@ router.delete('/:id', async(req, res) => {
         await Book.deleteMany({especiality: especiality.name});
         //Check is username is correct
         if(!especiality){
-            return res.status(400).json({msg: 'Consulting dont exist in bd.'})
+            return res.status(400).json({msg: 'Especialidad no registrada.'})
         }
         return res.json(especiality)
     } catch (err) {

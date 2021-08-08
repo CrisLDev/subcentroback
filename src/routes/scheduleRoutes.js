@@ -9,7 +9,7 @@ router.post('/', async(req, res) => {
         const scheduleExist = await Schedule.findOne({dateStart: hourStart, dateEnd: hourEnd, doctor_id: doctor_id, day: day});
 
         if(scheduleExist){
-            return res.status(400).json({msg: 'Schedule already exist.'})
+            return res.status(400).json({msg: 'Horario ya existe.'})
         }
 
         const newSchedule = new Schedule({
