@@ -10,7 +10,7 @@ router.post('/', async(req, res) => {
         const consultingNameExist = await Consulting.findOne({name});
         
         if(consultingNameExist){
-            return res.status(400).json({msg: 'Consulting room already exist.'})
+            return res.status(400).json({msg: 'El consultorio no existe.'})
         }
         const newConsulting = new Consulting({
             name, code, especiality
@@ -79,7 +79,7 @@ router.delete('/:id', async(req, res) => {
         await Book.deleteMany({consulting_room: consulting.code});
         //Check is username is correct
         if(!consulting){
-            return res.status(400).json({msg: 'Consulting dont exist in bd.'})
+            return res.status(400).json({msg: 'El consultorio no existe.'})
         }
         return res.json(consulting)
     } catch (err) {

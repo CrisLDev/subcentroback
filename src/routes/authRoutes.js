@@ -27,11 +27,11 @@ router.post('/register', async(req, res) => {
         const userByNameExist = await User.findOne({userName});
         
         if(userByNameExist){
-            return res.status(400).json({msg: 'Username already exist.'})
+            return res.status(400).json({msg: 'Nombre de usuario ya existe.'})
         }
         const userByEmailExist = await User.findOne({email});
         if(userByEmailExist){
-            return res.status(400).json({msg: 'Email already was taken.'})
+            return res.status(400).json({msg: 'El email ya está en uso.'})
         }
         const newUser = new User({
             userName, email, password
@@ -61,14 +61,14 @@ router.put('/user', async(req, res) => {
         const userExist = await User.findById(user_id);
         const userByNameExist = await User.findOne({userName});
         if(userByNameExist && userByNameExist._id != user_id){
-            return res.status(400).json({msg: 'Username already exist.'})
+            return res.status(400).json({msg: 'El nombre de usuario ya está en uso.'})
         }
         const userByEmailExist = await User.findOne({email});
         if(userByEmailExist && userByEmailExist._id != user_id){
-            return res.status(400).json({msg: 'Email already exist.'})
+            return res.status(400).json({msg: 'El email ya está en uso.'})
         }
         if(!userExist){
-            return res.status(400).json({msg: 'User doenst exist.'})
+            return res.status(400).json({msg: 'El usuario no existe.'})
         }
         const userToEdit = ({
             userName, email, adress, fullName, age, telephoneNumber, dni
@@ -102,13 +102,13 @@ router.post('/login', async(req, res) => {
         let userExist = await User.findOne({userName});
         //Check is username is correct
         if(!userExist){
-            return res.status(400).json({msg: 'Username doesnt exist.'})
+            return res.status(400).json({msg: 'El nombre de usuario no existe.'})
         }
         //Validating password
         const isMatch = await bcrypt.compare(password, userExist.password);
 
         if(!isMatch){
-            return res.status(400).json({msg: 'Password is incorrect.'})
+            return res.status(400).json({msg: 'La contraseña es incorrecta.'})
         }
         
         const token = jwt.sign({id: userExist.id}, 'rashumulukaska', {expiresIn: 86400});
@@ -127,7 +127,7 @@ router.get('/me', tokenValidation, async(req, res) => {
         const userExist = await User.findById(req.userId);
         //Check is username is correct
         if(!userExist){
-            return res.status(400).json({msg: 'Username doesnt exist.'})
+            return res.status(400).json({msg: 'El nombre de usuario no existe.'})
         }
         return res.json(userExist)
     } catch (err) {
@@ -141,7 +141,7 @@ router.get('/users', async(req, res) => {
         const users = await User.find();
         //Check is username is correct
         if(!users){
-            return res.status(400).json({msg: 'Dont have users in bd.'})
+            return res.status(400).json({msg: 'No existen usuario registrados.'})
         }
         return res.json(users)
     } catch (err) {
@@ -155,7 +155,7 @@ router.get('/doctors', async(req, res) => {
         const doctors = await User.find({role: 'doctor'});
         //Check is username is correct
         if(!doctors){
-            return res.status(400).json({msg: 'Dont have doctors in bd.'})
+            return res.status(400).json({msg: 'No hay doctores asignados.'})
         }
         return res.json(doctors)
     } catch (err) {
@@ -169,7 +169,7 @@ router.get('/patients', async(req, res) => {
         const patients = await User.find({role: 'user'});
         //Check is username is correct
         if(!patients){
-            return res.status(400).json({msg: 'Dont have patients in bd.'})
+            return res.status(400).json({msg: 'No hay pacientes asignados.'})
         }
         return res.json(patients)
     } catch (err) {
@@ -183,7 +183,7 @@ router.get('/patients/:id', async(req, res) => {
         const patient = await User.findOne({role: 'user', _id: req.params.id});
         //Check is username is correct
         if(!patient){
-            return res.status(400).json({msg: 'Patient dont exist in bd.'})
+            return res.status(400).json({msg: 'Paciente no está asignado.'})
         }
         return res.json(patient)
     } catch (err) {
@@ -198,7 +198,7 @@ router.delete('/users/:id', tokenValidation, async(req, res) => {
         const Books = await Book.deleteMany({patient_id: req.params.id});
         //Check is username is correct
         if(!user){
-            return res.status(400).json({msg: 'User dont exist in bd.'})
+            return res.status(400).json({msg: 'El usuario no existe.'})
         }
         return res.json(user)
     } catch (err) {
@@ -239,7 +239,7 @@ router.post('/create', async (req, res) => {
 
                     await fs.unlink(imageTempPath);
 
-                    res.status(500).json({error: 'Only images are allowed'});
+                    res.status(500).json({error: 'Solo se permiten imagenes'});
                 }
 
             }
