@@ -91,7 +91,7 @@ router.post('/', async(req, res) => {
     }
 
     // Verificamos si la hora a registrar es valida
-    if(req.body.hour === '09:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
+    if(req.body.hour === '08:00' || req.body.hour === "11:00" || req.body.hour === '13:00' || req.body.hour === '15:00'){
         try {
             const {dateForSearch, hour, patient_id, especiality, doctor_id} = req.body;
             // Creamos el codigo para la cita
@@ -111,7 +111,7 @@ router.post('/', async(req, res) => {
                 const consultoriosDisponible = await Promise.all(Object.values(consultorios).map(
                     async (consultorio) => {
                         const consultorioDisponible = await Book.find({consulting_room: consultorio.code, date: dateForSearch, hour: hour});
-                        if(req.body.hour === '09:00' || req.body.hour === '13:00' || req.body.hour === '15:00'){
+                        if(req.body.hour === '08:00' || req.body.hour === '13:00' || req.body.hour === '15:00'){
                             if(consultorioDisponible.length <= 3){
                                 var algooo = [];
                                 algooo.push(consultorio.code)
