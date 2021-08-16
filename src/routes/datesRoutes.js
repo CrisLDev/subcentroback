@@ -168,11 +168,17 @@ router.post('/', async(req, res) => {
             if(doctor_id === ''){
                 const consultorio = await Consulting.findOne({code: consultoriosDisponible[0][0]});
                 newBook.doctor_id = consultorio.doctor_id;
+                const doctor = await User.findById(consultorio.doctor_id);
+                doctor.patients_id.unshift({_id: patient_id});
+                await doctor.save();
             }
             if(doctor_id != ''){
                 const consultorio = await Consulting.findOne({doctor_id});
+                const doctor = await User.findById(doctor_id);
+                doctor.patients_id.unshift({_id: patient_id});
                 newBook.doctor_id = consultorio.doctor_id;
                 newBook.consulting_room = consultorio.code;
+                await doctor.save();
             }
             const bookSaved = await newBook.save();
             res.json(bookSaved);

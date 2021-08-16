@@ -51,6 +51,12 @@ const UserSchema = new mongoose.Schema({
         ref: 'consulting',
         default: null
     },
+    patients_id: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user',
+        },
+      ]
 }, {timestamps: true, versionKey: false});
 
 module.exports = User = mongoose.model('user', UserSchema)
