@@ -107,7 +107,7 @@ router.post('/', async(req, res) => {
             
             //
             
-              const consultorios = await Consulting.find({especiality: especiality}).where('doctor_id').ne(null);
+              const consultorios = await Consulting.find({especiality: especiality});
                 const consultoriosDisponible = await Promise.all(Object.values(consultorios).map(
                     async (consultorio) => {
                         const consultorioDisponible = await Book.find({consulting_room: consultorio.code, date: dateForSearch, hour: hour});
@@ -190,7 +190,7 @@ router.post('/', async(req, res) => {
 router.post('/consulting', async(req, res) => {
     try {
         const book = await Book.find({date: req.body.dateForSearch, especiality: req.body.especiality});
-        const rooms = await Consulting.find({especiality: req.body.especiality});
+        const rooms = await Consulting.find({especiality: req.body.especiality, doctor_id: {$ne: null }});
         const {day} = req.body;
         let dayToConsult;
         if ( day ===  4) dayToConsult = '01';
