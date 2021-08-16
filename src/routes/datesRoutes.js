@@ -107,7 +107,7 @@ router.post('/', async(req, res) => {
             
             //
             
-              const consultorios = await Consulting.find({especiality: especiality}).where('doctor_id').new(null);
+              const consultorios = await Consulting.find({especiality: especiality}).where('doctor_id').ne(null);
                 const consultoriosDisponible = await Promise.all(Object.values(consultorios).map(
                     async (consultorio) => {
                         const consultorioDisponible = await Book.find({consulting_room: consultorio.code, date: dateForSearch, hour: hour});
