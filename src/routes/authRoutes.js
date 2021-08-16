@@ -164,6 +164,20 @@ router.get('/doctors', async(req, res) => {
     }
 });
 
+router.get('/doctorsnoconsultings', async(req, res) => {
+    try {
+        const doctors = await User.find({role: 'doctor'}).where('room_id').equals(null);
+        //Check is username is correct
+        if(!doctors){
+            return res.status(400).json({msg: 'No hay doctores disponibles.'})
+        }
+        return res.json(doctors)
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
 router.get('/patients', async(req, res) => {
     try {
         const patients = await User.find({role: 'user'});

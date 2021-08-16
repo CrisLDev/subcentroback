@@ -45,7 +45,12 @@ const UserSchema = new mongoose.Schema({
     imgUrl: {
         type: String,
         trim: true
-    }
+    },
+    room_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'consulting',
+        default: null
+    },
 }, {timestamps: true, versionKey: false});
 
 module.exports = User = mongoose.model('user', UserSchema)

@@ -162,12 +162,17 @@ router.post('/', async(req, res) => {
                 hour,
                 consulting_room: consultoriosDisponible[0][0],
                 possible_hour: possible,
-                especiality
+                especiality,
+                doctor_id: null
             });
+            if(doctor_id === ''){
+                const consultorio = await Consulting.findOne({code: consultoriosDisponible[0][0]});
+                newBook.doctor_id = consultorio.doctor_id;
+            }
             if(doctor_id != ''){
-                Object.assign(
-                    newBook, {doctor_id}
-                );
+                const consultorio = await Consulting.findOne({doctor_id});
+                newBook.doctor_id = consultorio.doctor_id;
+                newBook.consulting_room = consultorio.code;
             }
             const bookSaved = await newBook.save();
             res.json(bookSaved);

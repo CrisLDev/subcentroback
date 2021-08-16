@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Consulting = require('../models/Consulting');
 const Book = require('../models/Book');
+const User = require('../models/User');
 
 router.post('/', async(req, res) => {
     try {
@@ -45,7 +46,7 @@ router.post('/rooms', async(req, res) => {
 
 router.get('/:id', async(req, res) => {
     try {
-        const consultingExists = await Consulting.findById(req.params.id);
+        const consultingExists = await Consulting.findById(req.params.id).populate('doctor_id');
         return res.json(consultingExists);
     } catch (err) {
         console.error(err.menssage);
@@ -55,7 +56,7 @@ router.get('/:id', async(req, res) => {
 
 router.put('/:id', async(req, res) => {
     try {
-        const {name, code, especiality} = req.body;
+        const {name, code, especiality, doctor_id} = req.body;
         const roomExist = await Consulting.findOne({name: name});
         if(roomExist){
             if(roomExist._id != req.params.id){
@@ -63,9 +64,29 @@ router.put('/:id', async(req, res) => {
             }
         }
         const roomToEdit = ({
-            name, code, especiality
+            name, code, especiality, doctor_id
         });
+        await User.findByIdAndUpdate(doctor_id, {room_id: req.params.id}, {new: true});
         const userEdited = await Consulting.findByIdAndUpdate(req.params.id, roomToEdit, {new: true});
+        return res.status(200).json(userEdited);
+    } catch (err) {
+        console.error(err.menssage);
+        return res.status(400).json({err});
+    }
+});
+
+router.put('/:id/deletedoctor', async(req, res) => {
+    console.log(req.body, req.params.id)
+    try {
+        const {doctor_id} = req.body;
+        const roomExist = await Consulting.findById(req.params.id);
+        if(roomExist){
+            if(roomExist._id != req.params.id){
+                return res.status(400).json({msg: 'Consultorio no existe.'})
+            }
+        }
+        await User.findByIdAndUpdate(doctor_id, {room_id: null}, {new: true});
+        const userEdited = await Consulting.findByIdAndUpdate(req.params.id, {doctor_id: null}, {new: true});
         return res.status(200).json(userEdited);
     } catch (err) {
         console.error(err.menssage);
