@@ -124,7 +124,7 @@ router.post('/login', async(req, res) => {
 
 router.get('/me', tokenValidation, async(req, res) => {
     try {
-        const userExist = await User.findById(req.userId).populate('patients_id');
+        const userExist = await User.findById(req.userId).populate('patients');
         //Check is username is correct
         if(!userExist){
             return res.status(400).json({msg: 'El nombre de usuario no existe.'})

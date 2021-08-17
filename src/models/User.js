@@ -51,7 +51,7 @@ const UserSchema = new mongoose.Schema({
         ref: 'consulting',
         default: null
     },
-    patients_id: [
+    patients: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user',
